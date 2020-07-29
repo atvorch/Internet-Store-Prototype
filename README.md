@@ -1,44 +1,39 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Для запуска
+* npm i
+* npm run start
 
-In the project directory, you can run:
+## ТехСтек
+  Проект делал в связке React & Redux & TypeScript & Styled-Components.
+  Проект создан при помощи create-react-app.
 
-### `npm start`
+## Описание логики
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+В приложении есть общий стор который состоит из 3 модулей: cart, goods, general:
+  * cart - отвечает за содержимое корзины. Содержит экшены для добавления и удаления товара из корзины.
+  * goods - отвечает за список товаров. Содержит экшены для инициализации наименований и самих товаров.
+  * general - отвечает за курс валюты. Содержит экшен для его изменения.
+При открытии страници читаем файл с наименованиями, после этого читаем файл с товарами,  запускаем таймер с интервалом 3 секунды (не ставил 15, что бы было сразу наглядно, можно поменять в home.tsx константу UPDATE_FREQUENCY) на чтение товаров из файла и изменение курса валют.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Каждое изменение курса валют отражается на ценах в списке товаров, в корзине по итоговой цене каждого продукта и по итоговой цене всей корзины. 
+Так-же добавил отображение курса валют, что бы можно было наглядно понять почему ячейки подсвечиваются красным или зеленым.
 
-### `npm test`
+В тз небыло указано в каком случае показывать сообщение о том что количество товара ограничено, по этому выбрал ориентир в 5 единиц. Если на складе товара <= 5 показываю сообщение что товар в ограниченнном количестве. 
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Функционал 
 
-### `npm run build`
+   При нажатии на ячейку в списке товаров, товар добавляется в корзину в количестве 1 штуки. 
+   Если в корзине товар уже есть и количество на складе позволяет добавить еще, добавляет еще 1 шт.
+  
+## Время
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+На задачу ушло 5 часов: 
+  * 3 часа - основная логика: стор, компоненты, работа с чтением данных из файла и маппинг товаров с наименованиями
+  * 1 час - стилизацию
+  * 1 час - тестирование и фикс багов.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Замечания
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+* Постарался сделать немного приближенно к дизайну, но на пиксель перфект не стал тратить времяю.
+* В файле с данными товаров data.json присутствуют свойства которые в тз небыли упомянуты (СV, B, Pl), это немного сбивает столку.
+* В тз поставлена задача каждые 15 секунда считывать данные из файла с товарами и в ручную манипулировать курсом валют, а так же подсвечивать ячейки товаров в зависимости от того как изменилась цена. Так как цена товаров не меняется, то курс валют затрагивает все ячейки, и если курс поднялся, все загорятся красным, упал - все загорятся зеленым. Это немного нереалистично.
