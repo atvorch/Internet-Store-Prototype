@@ -84,7 +84,7 @@ const reducer: Reducer<CartState, CartAction> = (
 
       return {
         total: calcTotal(items),
-        items,
+        items: { ...items },
       };
     }
     default:
@@ -125,15 +125,21 @@ const setItem = (item: Goods, quantity: number): ThunkResult<void> => (
   dispatch
 ) => {
   if (quantity === 0) {
-    dispatch(deleteItem(item.id));
+    dispatch({
+      type: CartActions.Remove,
+      payload: {
+        itemId: item.id,
+      },
+    });
+  } else {
+    dispatch({
+      type: CartActions.SetItem,
+      payload: {
+        item,
+        quantity,
+      },
+    });
   }
-  dispatch({
-    type: CartActions.SetItem,
-    payload: {
-      item,
-      quantity,
-    },
-  });
 };
 
 export default {
