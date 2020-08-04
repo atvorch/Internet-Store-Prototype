@@ -38,13 +38,13 @@ export const Group: React.FC<OwnProps & DispatchProps> = ({
         </Styled.GroupContent>
       </Styled.GroupWrapper>
     );
-  }, [group]);
+  }, [group, addToCart]);
 
   return renderGoods;
 };
 
 const connectEnhancer = connect<{}, DispatchProps, OwnProps, RootState>(null, {
-  addToCart: cartModule.actions.setItem,
+  addToCart: cartModule.actions.addItem,
 });
 
 export default connectEnhancer(Group);

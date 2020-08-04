@@ -22,59 +22,90 @@ const defaultState: CartState = {
 };
 
 const CartActions = {
-  SetItem: "cardModule/setItem",
-  Remove: "cardModule/delete",
+  AddItem: "cardModule/addItem",
+  SetItemQuantity: "cardModule/setItemQuantity",
+  DeleteItem: "cardModule/deleteItem",
 } as const;
 
-interface CartSetItemAction {
-  type: typeof CartActions.SetItem;
+interface AddItem {
+  type: typeof CartActions.AddItem;
   payload: {
-    item: any;
+    item: Goods;
     quantity: number;
   };
 }
 
-interface CartRemoveAction {
-  type: typeof CartActions.Remove;
+interface CartSetItemQuantityAction {
+  type: typeof CartActions.SetItemQuantity;
+  payload: {
+    itemId: number;
+    quantity: number;
+  };
+}
+
+interface CartDeleteItemAction {
+  type: typeof CartActions.DeleteItem;
   payload: {
     itemId: number;
   };
 }
 
-type CartAction = CartSetItemAction | CartRemoveAction;
+type CartAction = CartSetItemQuantityAction | CartDeleteItemAction | AddItem;
 
 const reducer: Reducer<CartState, CartAction> = (
   state = defaultState,
   action
 ) => {
   switch (action.type) {
-    case CartActions.SetItem: {
+    case CartActions.AddItem: {
       const { item, quantity } = action.payload;
-      let items = { ...state.items };
+      const items = { ...state.items };
+      const cartItem = items[item.id];
 
-      if (items[item.id]) {
-        if (items[item.id].quantity + quantity > item.quantity) {
-          return state;
-        }
-        items[item.id].quantity = items[item.id].quantity + quantity;
-      } else {
-        if (quantity > item.quantity) {
-          return state;
-        }
-
-        items[item.id] = {
-          item,
-          quantity,
-        };
+      if (
+        quantity < 0 ||
+        quantity > item.quantity ||
+        (cartItem && cartItem.quantity + quantity > item.quantity)
+      ) {
+        return state;
       }
 
+      let totalQuantity = cartItem ? cartItem.quantity + quantity : quantity;
+
       return {
-        items,
+        items: {
+          ...items,
+          [item.id]: {
+            item,
+            quantity: totalQuantity,
+          },
+        },
         total: calcTotal(items),
       };
     }
 
-    case CartActions.Remove: {
+    case CartActions.SetItemQuantity: {
+      const { itemId, quantity } = action.payload;
+      let items = { ...state.items };
+      const cartItem = items[itemId];
+
+      if (!cartItem || quantity > cartItem.item.quantity || quantity < 0) {
+        return state;
+      }
+
+      return {
+        items: {
+          ...items,
+          [itemId]: {
+            ...cartItem,
+            quantity,
+          },
+        },
+        total: calcTotal(items),
+      };
+    }
+
+    case CartActions.DeleteItem: {
       const { itemId } = action.payload;
       let items = { ...state.items };
 
@@ -114,38 +145,52 @@ export type ThunkResult<R> = ThunkAction<R, RootState, void, CartAction>;
 
 const deleteItem = (itemId: number): ThunkResult<void> => (dispatch) => {
   dispatch({
-    type: CartActions.Remove,
+    type: CartActions.DeleteItem,
     payload: {
       itemId,
     },
   });
 };
 
-const setItem = (item: Goods, quantity: number): ThunkResult<void> => (
-  dispatch
-) => {
+const setItemQuantity = (
+  itemId: number,
+  quantity: number
+): ThunkResult<void> => (dispatch) => {
   if (quantity === 0) {
     dispatch({
-      type: CartActions.Remove,
+      type: CartActions.DeleteItem,
       payload: {
-        itemId: item.id,
+        itemId,
       },
     });
   } else {
     dispatch({
-      type: CartActions.SetItem,
+      type: CartActions.SetItemQuantity,
       payload: {
-        item,
+        itemId,
         quantity,
       },
     });
   }
 };
 
+const addItem = (item: Goods, quantity: number): ThunkResult<void> => (
+  dispatch
+) => {
+  dispatch({
+    type: CartActions.AddItem,
+    payload: {
+      item,
+      quantity,
+    },
+  });
+};
+
 export default {
   reducer,
   actions: {
-    setItem,
+    addItem,
+    setItemQuantity,
     deleteItem,
   },
   selectors: {

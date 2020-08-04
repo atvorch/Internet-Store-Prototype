@@ -40,7 +40,8 @@ export const Cart: React.FC<StateProps & DispatchProps> = ({
         })}
       </Styled.Wrapper>
     );
-  }, [items]);
+  }, [items, changeQuantity, deleteItem]);
+
   return (
     <Styled.Cart>
       <Styled.Header>
@@ -70,7 +71,7 @@ const connectEnhancer = connect<StateProps, DispatchProps, {}, RootState>(
   }),
   {
     deleteItem: cartModule.actions.deleteItem,
-    changeQuantity: cartModule.actions.setItem,
+    changeQuantity: cartModule.actions.setItemQuantity,
   }
 );
 
