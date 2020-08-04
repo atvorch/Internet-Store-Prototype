@@ -3,12 +3,11 @@ import { connect } from "react-redux";
 import { CartItem as ICartItem } from "modules/cart";
 import generalModule from "modules/general";
 import * as Styled from "./styled";
-import { Goods } from "data/types";
 
 interface OwnProps {
   item: ICartItem;
   onDelete: () => void;
-  onChangeQuantity: (item: Goods, quantity: number) => void;
+  onChangeQuantity: (itemId: number, quantity: number) => void;
 }
 
 interface StateProps {
@@ -27,11 +26,11 @@ export const CartItem: React.FC<OwnProps & StateProps> = ({
 
   React.useEffect(() => {
     setQuantity(item.quantity);
-  }, [item.quantity]);
+  }, [item.quantity, quantity]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuantity(parseInt(e.target.value));
-    onChangeQuantity(item.item, parseInt(e.target.value));
+    onChangeQuantity(item.item.id, parseInt(e.target.value));
   };
 
   const totalPrice = React.useMemo(() => {
